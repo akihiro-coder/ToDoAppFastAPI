@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+
 from app import models, schemas
 from app.database import get_db
 from app.utils import hash_pasword, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
@@ -30,5 +33,22 @@ def login(
         db: Session = Depends(get_db)
 ):
     # メールアドレスをユーザー名として扱う (form_data.username)
+    user = db.query(models.User).filter(models.User.email == form_data.username).filter(models.User.email == form_data.username).first()
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-    pass
+    # アクセストークンの発行
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={'sub': str(user.id)}, # トークン内にユーザーIDを格納
+        expires_delta=access_token_expires
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
