@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app import models, schemas
 from app.database import get_db
-from app.utils import hash_pasword
+from app.utils import hash_pasword, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -21,3 +22,13 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+
+
+@router.post('/login')
+def login(
+        form_data: OAuth2PasswordRequestForm = Depends(),
+        db: Session = Depends(get_db)
+):
+    # メールアドレスをユーザー名として扱う (form_data.username)
+
+    pass
