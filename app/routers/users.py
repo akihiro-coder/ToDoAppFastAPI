@@ -1,13 +1,17 @@
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.database import get_db
 from app.utils import hash_pasword, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 
+
+
+# OAuth2PasswordBearerは、トークンを取得するためのURLを指定するために使用
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
