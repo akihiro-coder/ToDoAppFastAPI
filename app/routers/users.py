@@ -33,7 +33,7 @@ def login(
         db: Session = Depends(get_db)
 ):
     # メールアドレスをユーザー名として扱う (form_data.username)
-    user = db.query(models.User).filter(models.User.email == form_data.username).filter(models.User.email == form_data.username).first()
+    user = db.query(models.User).filter(models.User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
