@@ -6,12 +6,8 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.database import get_db
-from app.utils import hash_pasword, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.auth import hash_pasword, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, get_current_user
 
-
-
-# OAuth2PasswordBearerは、トークンを取得するためのURLを指定するために使用
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -56,3 +52,11 @@ def login(
         "access_token": access_token,
         "token_type": "bearer",
     }
+
+
+
+@router.get("/me", response_model=schemas.UserOut)
+def read_current_user(
+        current_user: models.User = Depends(get_current_user)
+):
+    return current_user
