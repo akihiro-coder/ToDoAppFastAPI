@@ -20,9 +20,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-# Retrieve SECRET_KEY from environment variable
 SECRET_KEY = os.getenv("SECRET_KEY")
-if not SECRET_KEY:
+if SECRET_KEY is None:
     raise ValueError("SECRET_KEY environment variable is not set")
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))  # Default to 30 if not set
