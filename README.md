@@ -155,3 +155,52 @@ tests/test_todo.py::test_update_todo_forbidden PASSED                       [ 85
 tests/test_todo.py::test_get_todo_not_found PASSED                          [100%]
 
 =============================== 7 passed in 1.77s ===============================
+
+
+
+## 🚀 起動方法（Docker利用）
+
+このアプリケーションは、**FastAPI + SQLite** で構成されており、Dockerを使用して簡単にローカル実行できます。
+
+### ✅ 前提条件
+
+- Docker
+- Docker Compose
+
+---
+
+### 🐳 起動コマンド
+
+プロジェクトルートにて、以下を実行してください：
+
+```bash
+docker compose up --build
+```
+
+---
+
+### 🌍 アクセス確認
+起動後、以下のURLにアクセスすることで、Swagger UI（APIドキュメント）を確認できます：
+
+📎 http://localhost:8000/docs
+
+---
+
+### ⚙️ .envファイルについて
+アプリケーションの設定値は .env ファイルに定義されています。
+プロジェクトルート直下に以下のような内容で .env を作成してください：
+
+```.dotenv
+SECRET_KEY=your_secret_key
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+※ docker-compose.yml でこのファイルを読み込むように設定されています。
+
+---
+
+### 🛑 停止方法
+アプリケーションの起動を終了したい場合は、以下のコマンドを実行します：
+
+```bash
+docker compose down
+```
