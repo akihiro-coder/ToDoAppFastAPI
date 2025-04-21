@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -27,7 +27,7 @@ def get_my_todos(
 
 
 # Todoの作成
-@router.post("/todos", response_model=schemas.TodoOut)
+@router.post("/todos", response_model=schemas.TodoOut, status_code=status.HTTP_201_CREATED)
 def create_todo(
         todo: schemas.TodoCreate,
         db: Session = Depends(get_db),
@@ -102,7 +102,7 @@ def delete_todo(
     try:
         db.delete(todo)
         db.commit()
-        return {"message": "削除しました。"}
+        return Response(status_code=status.HTTP_204_NO_CONTENT) # restfulに204を返す
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f'DB Error: {str(e)}')
