@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 # .envファイルの読み込み(load env file from the same directory as this file)
-load_dotenv(os.path.join(os.path.abspath(os.path.dirname(__file__)), ".env"))
+load_dotenv()
 
 
 from app import models
