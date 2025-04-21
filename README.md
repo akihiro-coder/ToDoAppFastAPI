@@ -142,6 +142,8 @@ PYTHONPATH=. pytest -v tests/test_todo.py
 ```
 
 
+### ✅ テスト実行結果
+```bash
 =============================== test session starts ================================
 platform linux -- Python 3.12.3, pytest-8.3.5
 collected 7 items
@@ -155,3 +157,4 @@ tests/test_todo.py::test_update_todo_forbidden PASSED                       [ 85
 tests/test_todo.py::test_get_todo_not_found PASSED                          [100%]
 
 =============================== 7 passed in 1.77s ===============================
+```
