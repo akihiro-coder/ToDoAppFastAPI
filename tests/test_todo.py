@@ -127,3 +127,71 @@ async def test_delete_todo_success():
         # 4. 再度取得 → 404を期待
         get_res = await ac.get(f"/todos/todos/{todo_id}", headers=headers)
         assert get_res.status_code == 404
+
+
+async def test_create_todo_unauthorized():
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        # 認証ヘッダーなしでToDo作成
+        res = await ac.post("/todos/todos", json={
+            "title": "Should Fail",
+            "description": "No auth provided",
+            "completed": False
+        })
+        assert res.status_code == 401
+
+
+async def test_update_todo_forbidden():
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        # ユーザーA作成＆ログイン
+        await ac.post("/users/signup", json={
+            "email": "userA@example.com", "password": "passA"
+        })
+        resA = await ac.post("/users/login", data={
+            "username": "userA@example.com", "password": "passA"
+        })
+        tokenA = resA.json()["access_token"]
+        headersA = {"Authorization": f"Bearer {tokenA}"}
+
+        # ToDo作成（userAの所有物）
+        create_res = await ac.post("/todos/todos", json={
+            "title": "userA's task",
+            "description": "Private",
+            "completed": False
+        }, headers=headersA)
+        todo_id = create_res.json()["id"]
+
+        # ユーザーB作成＆ログイン
+        await ac.post("/users/signup", json={
+            "email": "userB@example.com", "password": "passB"
+        })
+        resB = await ac.post("/users/login", data={
+            "username": "userB@example.com", "password": "passB"
+        })
+        tokenB = resB.json()["access_token"]
+        headersB = {"Authorization": f"Bearer {tokenB}"}
+
+        # userB が userA のToDoを更新 → 403を期待
+        res = await ac.put(f"/todos/todos/{todo_id}", json={
+            "title": "Not Allowed",
+            "description": "Illegal update",
+            "completed": True
+        }, headers=headersB)
+
+        assert res.status_code == 403
+
+
+async def test_get_todo_not_found():
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        # ユーザー登録＆ログイン
+        await ac.post("/users/signup", json={
+            "email": "notfound@example.com", "password": "pass"
+        })
+        login_res = await ac.post("/users/login", data={
+            "username": "notfound@example.com", "password": "pass"
+        })
+        token = login_res.json()["access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # 存在しないIDをGET（例：99999）
+        res = await ac.get("/todos/todos/99999", headers=headers)
+        assert res.status_code == 404
