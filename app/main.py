@@ -1,12 +1,18 @@
-from fastapi import FastAPI
+import os
+from dotenv import load_dotenv
+
+# .envファイルの読み込み(load env file from the same directory as this file)
+load_dotenv(os.path.join(os.path.abspath(os.path.dirname(__file__)), ".env"))
+
+
 from app import models
 from app.database import engine
-from app.routers import todos, users
-
 
 # DBのテーブルを作成
 models.Base.metadata.create_all(bind=engine)
 
+
+from fastapi import FastAPI
 
 app = FastAPI(
     title="Todo API",
@@ -14,7 +20,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-
+from app.routers import todos, users
 # ルーターの登録
 app.include_router(todos.router)
 app.include_router(users.router)

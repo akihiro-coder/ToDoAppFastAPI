@@ -15,8 +15,9 @@ class TodoCreate(TodoBase):
 
 
 # レスポンス用（DBのIDを含む）
-class Todo(TodoBase):
+class TodoOut(TodoBase):
     id: int
+    user_id: int
 
     class Config:
         orm_mode = True # ORMのデータからPydanticモデルへ変換可能に

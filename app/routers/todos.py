@@ -1,23 +1,39 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 from app import models, schemas
+from app.auth import get_current_user
 from app.database import engine, SessionLocal, get_db
+
 
 
 router = APIRouter(prefix="/todos", tags=["Todos"])
 
 
 # Todoの一覧取得
-@router.get("/todos", response_model=list[schemas.Todo])
-def read_todos(skip: int = 0,  limit: int = 10, db: Session = Depends(get_db)):
-    todos = db.query(models.Todo).offset(skip).limit(limit).all()
+@router.get("/todos", response_model=list[schemas.TodoOut])
+def get_my_todos(
+        skip: int = 0,
+        limit: int = 10,
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(get_current_user)
+):
+    todos = (db.query(models.Todo)
+            .filter(models.Todo.user_id == current_user.id)
+             .offset(skip)
+             .limit(limit)
+             .all())
     return todos
 
 
 # Todoの作成
-@router.post("/todos", response_model=schemas.Todo)
-def create_todo(todo: schemas.TodoCreate, db: Session = Depends(get_db)):
-    db_todo = models.Todo(**todo.model_dump())
+@router.post("/todos", response_model=schemas.TodoOut)
+def create_todo(
+        todo: schemas.TodoCreate,
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(get_current_user)
+):
+    db_todo = models.Todo(**todo.model_dump(), user_id=current_user.id)
     try:
         db.add(db_todo)
         db.commit()
@@ -29,7 +45,7 @@ def create_todo(todo: schemas.TodoCreate, db: Session = Depends(get_db)):
 
 
 # 詳細取得
-@router.get("/todos/{todo_id}", response_model=schemas.Todo)
+@router.get("/todos/{todo_id}", response_model=schemas.TodoOut)
 def read_todo(todo_id: int, db: Session = Depends(get_db)):
     todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
     if todo is None:
@@ -37,7 +53,7 @@ def read_todo(todo_id: int, db: Session = Depends(get_db)):
     return todo
 
 # 更新
-@router.put("/todos/{todo_id}", response_model=schemas.Todo)
+@router.put("/todos/{todo_id}", response_model=schemas.TodoOut)
 def update_todo(todo_id: int, updated_todo: schemas.TodoCreate, db: Session = Depends(get_db)):
     todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
     if todo is None:
