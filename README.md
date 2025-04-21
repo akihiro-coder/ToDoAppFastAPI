@@ -94,3 +94,64 @@ FastAPI + JWT認証付きのToDoアプリを完成させ、カジュアル面談
 - 削除では、自分のToDoのみを削除できる
 
 ---
+
+
+
+## 🧪 自動テストの実装
+
+このアプリケーションでは、**FastAPI + pytest + httpx.AsyncClient** を用いた自動テストを導入しています。
+
+### ✅ 使用技術
+
+- `pytest`：テストフレームワーク
+- `pytest-asyncio`：非同期テスト対応
+- `httpx.AsyncClient` + `ASGITransport`：FastAPIの `TestClient` より実践的な非同期APIクライアント
+- `PYTHONPATH=.` によるパス解決（`app.main` のimport）
+
+---
+
+### ✅ テスト対象API一覧
+
+| メソッド | エンドポイント | テスト内容 |
+|----------|----------------|------------|
+| POST     | `/todos/todos`        | ToDo作成（正常系、未認証＝401） |
+| GET      | `/todos/todos`        | ToDo一覧取得（正常系） |
+| GET      | `/todos/todos/{id}`   | ToDo詳細取得（正常系、存在しないID＝404） |
+| PUT      | `/todos/todos/{id}`   | ToDo更新（正常系、他人のデータ更新＝403） |
+| DELETE   | `/todos/todos/{id}`   | ToDo削除（正常系、削除後に404を確認） |
+
+---
+
+### ✅ テスト設計ポリシー
+
+- 各テスト関数は **完全に自己完結型**  
+  （ユーザー登録 → ログイン → トークン取得 → 処理 の一連を含む）
+- CRUDの正常系だけでなく、**異常系（401, 403, 404）も明確にカバー**
+- 各API操作に対して、**HTTPステータスコード・レスポンスの整合性を検証**
+- `@pytest.mark.asyncio` を先頭に定義し、すべてのテストを非同期で統一
+- DB汚染を避けるため、各テストで個別ユーザー／データを使用
+
+---
+
+### ✅ テスト実行方法
+
+以下のコマンドを使用して、すべてのテストが実行されます：
+
+```bash
+PYTHONPATH=. pytest -v tests/test_todo.py
+```
+
+
+=============================== test session starts ================================
+platform linux -- Python 3.12.3, pytest-8.3.5
+collected 7 items
+
+tests/test_todo.py::test_create_todo_success PASSED                         [ 14%]
+tests/test_todo.py::test_read_todo_success   PASSED                         [ 28%]
+tests/test_todo.py::test_update_todo_success PASSED                         [ 42%]
+tests/test_todo.py::test_delete_todo_success PASSED                         [ 57%]
+tests/test_todo.py::test_create_todo_unauthorized PASSED                    [ 71%]
+tests/test_todo.py::test_update_todo_forbidden PASSED                       [ 85%]
+tests/test_todo.py::test_get_todo_not_found PASSED                          [100%]
+
+=============================== 7 passed in 1.77s ===============================
