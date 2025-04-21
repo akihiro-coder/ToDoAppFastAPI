@@ -46,18 +46,31 @@ def create_todo(
 
 # 詳細取得
 @router.get("/todos/{todo_id}", response_model=schemas.TodoOut)
-def read_todo(todo_id: int, db: Session = Depends(get_db)):
+def read_todo(
+        todo_id: int,
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(get_current_user)
+):
     todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
     if todo is None:
         raise HTTPException(status_code=404, detail="Todoが見つかりませんでした。")
+    if todo.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="このTodoにアクセスする権限がありません。")
     return todo
 
 # 更新
 @router.put("/todos/{todo_id}", response_model=schemas.TodoOut)
-def update_todo(todo_id: int, updated_todo: schemas.TodoCreate, db: Session = Depends(get_db)):
+def update_todo(
+        todo_id: int,
+        updated_todo: schemas.TodoCreate,
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(get_current_user)
+):
     todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
     if todo is None:
         raise HTTPException(status_code=404, detail="Todoが見つかりません。")
+    if todo.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="このTodoにアクセスする権限がありません。")
 
     # 値を上書き
     todo.title = updated_todo.title
@@ -75,10 +88,16 @@ def update_todo(todo_id: int, updated_todo: schemas.TodoCreate, db: Session = De
 
 # 削除
 @router.delete("/todos/{todo_id}")
-def delete_todo(todo_id: int, db: Session = Depends(get_db)):
+def delete_todo(
+        todo_id: int,
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(get_current_user)
+):
     todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
     if todo is None:
         raise HTTPException(status_code=404, detail="Todoが見つかりません。")
+    if todo.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="このTodoにアクセスする権限がありません。")
 
     try:
         db.delete(todo)
