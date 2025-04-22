@@ -1,11 +1,11 @@
+# ToDoアプリ（FastAPI）
+
+[![CI](https://github.com/akihiro-coder/ToDoAppFastAPI/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/akihiro-coder/ToDoAppFastAPI/actions/workflows/ci.yml)
+
+## 概要
+FastAPI + Docker + GitHub Actions による学習用 ToDo アプリ。
+
 # ToDoAppFastAPI
-## バックエンド技術強化のための開発スケジュール
-
-### 目標
-FastAPI + JWT認証付きのToDoアプリを完成させ、カジュアル面談でコードベースでの技術アピールができる状態に仕上げる。
-
----
-
 ### スケジュール
 
 | 日付 | 内容 | 対応スキル |
