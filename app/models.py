@@ -7,9 +7,9 @@ class Todo(Base):
     __tablename__ = 'todos'
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
+    title = Column(String, nullable=False, index=True)
     description = Column(String, nullable=True)
-    completed = Column(Boolean, default=False)
+    completed = Column(Boolean, nullable=False, default=False)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
     owner = relationship("User", back_populates="todos")
 
