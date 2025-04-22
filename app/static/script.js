@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     username: email,
                     password: password,
                 }),
+                cache: "no-store"
             });
         },
 
@@ -34,7 +35,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         // 2. ToDo一覧取得
-        const todosRes = await fetch("/todos/")
+        const todosRes = await fetch("/todos/todos", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
-    })
-})
+        const todos = await todosRes.json();
+        todosList.innerHTML = ""; // 既存のToDoをクリア
+        todos.forEach((todo) => {
+            const li = document.createElement("li");
+            li.textContent = `${todo.title} - ${todo.description || ""}`;
+            todosList.appendChild(li);
+        });
+
+        catch (err) {
+                console.error(err);
+                alert("通信エラー");
+            }
+    });
+});
