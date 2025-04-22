@@ -204,3 +204,150 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```bash
 docker compose down
 ```
+
+
+---
+## API仕様
+
+### `GET /todos/todos`
+- Get My Todos
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|----|------|------|
+| skip (query) | integer | No | スキップする件数 |
+| limit (query) | integer | No | 取得件数の上限 |
+
+#### レスポンス例
+```json
+[
+  {
+    "id": 1,
+    "title": "買い物",
+    "description": "牛乳を買う",
+    "completed": false,
+    "user_id": 1
+  }
+]
+```
+
+### `POST /todos/todos`
+- Create Todo
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|----|------|------|
+| title (body) | string | Yes | ToDoのタイトル |
+| description (body) | string | No | ToDoの説明 |
+| completed (body) | boolean | No | 完了済みかどうかのフラグ |
+
+#### レスポンス例
+```json
+{
+  "id": 1,
+  "title": "買い物",
+  "description": "牛乳を買う",
+  "completed": false,
+  "user_id": 1
+}
+```
+
+### `GET /todos/todos/{todo_id}`
+- Read Todo
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|----|------|------|
+| todo_id (path) | integer | Yes | ToDoのID |
+
+#### レスポンス例
+```json
+[
+  {
+    "id": 1,
+    "title": "買い物",
+    "description": "牛乳を買う",
+    "completed": false,
+    "user_id": 1
+  }
+]
+```
+
+### `PUT /todos/todos/{todo_id}`
+- Update Todo
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|----|------|------|
+| todo_id (path) | integer | Yes | ToDoのID |
+| title (body) | string | Yes | ToDoのタイトル |
+| description (body) | string | No | ToDoの説明 |
+| completed (body) | boolean | No | 完了済みかどうかのフラグ |
+
+#### レスポンス例
+```json
+{
+  "id": 1,
+  "title": "更新後",
+  "description": "説明更新",
+  "completed": true,
+  "user_id": 1
+}
+```
+
+### `DELETE /todos/todos/{todo_id}`
+- Delete Todo
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|----|------|------|
+| todo_id (path) | integer | Yes | ToDoのID |
+
+#### レスポンス例
+```json
+{
+  "message": "削除しました。"
+}
+```
+
+### `POST /users/signup`
+- Create User
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|----|------|------|
+| email (body) | string | Yes | ユーザーのメールアドレス |
+| password (body) | string | Yes | パスワード |
+
+#### レスポンス例
+```json
+{
+  "id": 1,
+  "email": "user@example.com"
+}
+```
+
+### `POST /users/login`
+- Login
+
+| パラメータ | 型 | 必須 | 説明 |
+|-----------|----|------|------|
+| grant_type (body) | string | No | パラメータ |
+| username (body) | string | Yes | パラメータ |
+| password (body) | string | Yes | パスワード |
+| scope (body) | string | No | パラメータ |
+| client_id (body) | string | No | ToDoのID |
+| client_secret (body) | string | No | パラメータ |
+
+#### レスポンス例
+```json
+{
+  "access_token": "string",
+  "token_type": "bearer"
+}
+```
+
+### `GET /users/me`
+- Read Current User
+
+#### レスポンス例
+```json
+{
+  "id": 1,
+  "email": "user@example.com"
+}
+```
