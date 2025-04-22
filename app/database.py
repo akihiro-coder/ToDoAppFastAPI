@@ -13,3 +13,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Baseクラス（モデル定義のベースになる）
 Base = declarative_base()
+
+# 依存関数: リクエスト毎にDBセッションを提供
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
