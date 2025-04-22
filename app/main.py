@@ -13,6 +13,7 @@ models.Base.metadata.create_all(bind=engine)
 
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title="Todo API",
@@ -24,3 +25,7 @@ from app.routers import todos, users
 # ルーターの登録
 app.include_router(todos.router)
 app.include_router(users.router)
+
+
+# 静的ファイルの登録
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
