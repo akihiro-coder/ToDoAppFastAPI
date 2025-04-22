@@ -208,11 +208,8 @@ docker compose down
 
 #### レスポンス例
 
-```json
-{
-  "message": "削除しました。"
-}
-```
+- ステータスコード: `204 No Content`
+- レスポンスボディなし
 
 ---
 
