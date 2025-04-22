@@ -330,7 +330,7 @@ docker compose down
 | username (body) | string | Yes | パラメータ |
 | password (body) | string | Yes | パスワード |
 | scope (body) | string | No | パラメータ |
-| client_id (body) | string | No | ToDoのID |
+| client_id (body) | string | No | クライアントID |
 | client_secret (body) | string | No | パラメータ |
 
 #### レスポンス例
